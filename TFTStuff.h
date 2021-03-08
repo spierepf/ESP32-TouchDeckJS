@@ -23,7 +23,13 @@ struct TFTCalibrationData {
 #define BUTTON_Y ((SCREEN_H / NUM_ROWS / 2))
 #define BUTTON_TEXTSIZE 1
 
-TFT_eSPI_Button button[NUM_BUTTONS];
+class Button {
+public:
+  TFT_eSPI_Button ui;
+  String text;
+};
+
+Button button[NUM_BUTTONS];
 
 void touch_calibrate(TFTCalibrationData& calibrationData, bool calibrationDataOK)
 {
@@ -55,7 +61,11 @@ void touch_calibrate(TFTCalibrationData& calibrationData, bool calibrationDataOK
 
 void drawButton(uint8_t b) {
   tft.setFreeFont(&FreeSansBold18pt7b);
-  button[b].drawButton(button[b].isPressed());
+  button[b].ui.drawButton(button[b].ui.isPressed(), button[b].text);
+}
+
+void configureButton(uint8_t b, String text) {
+  button[b].text = text;
 }
 
 void TFTStuff_setup(TFTCalibrationData& calibrationData, bool appDataValid) {
@@ -67,7 +77,8 @@ void TFTStuff_setup(TFTCalibrationData& calibrationData, bool appDataValid) {
   for (uint8_t b = 0; b < NUM_BUTTONS; b++) {
     uint8_t col = b % NUM_COLS;
     uint8_t row = b / NUM_COLS;
-    button[b].initButton(&tft, BUTTON_X + col * (BUTTON_W + BUTTON_SPACING_X), BUTTON_Y + row * (BUTTON_H + BUTTON_SPACING_Y), BUTTON_W, BUTTON_H, TFT_WHITE, TFT_BLUE, TFT_WHITE, "", BUTTON_TEXTSIZE);
+    configureButton(b, String(b));
+    button[b].ui.initButton(&tft, BUTTON_X + col * (BUTTON_W + BUTTON_SPACING_X), BUTTON_Y + row * (BUTTON_H + BUTTON_SPACING_Y), BUTTON_W, BUTTON_H, TFT_WHITE, TFT_BLUE, TFT_WHITE, "", BUTTON_TEXTSIZE);
 
     drawButton(b);
   }
@@ -79,15 +90,15 @@ void TFTStuff_loop() {
   boolean pressed = tft.getTouch(&t_x, &t_y);
 
   for (uint8_t b = 0; b < NUM_BUTTONS; b++) {
-    if (pressed && button[b].contains(t_x, t_y)) {
-      button[b].press(true);
+    if (pressed && button[b].ui.contains(t_x, t_y)) {
+      button[b].ui.press(true);
     } else {
-      button[b].press(false);
+      button[b].ui.press(false);
     }
   }
 
   for (uint8_t b = 0; b < NUM_BUTTONS; b++) {
-    if (button[b].justPressed() || button[b].justReleased()) {
+    if (button[b].ui.justPressed() || button[b].ui.justReleased()) {
       drawButton(b);
     }
   }
