@@ -65,7 +65,7 @@ void drawButton(uint8_t b) {
   button[b].ui.drawButton(button[b].ui.isPressed(), button[b].text);
 }
 
-void configureButton(uint8_t b, String text, String command) {
+void configureButton(const int b, const char* text, const char* command) {
   button[b].text = text;
   button[b].command = command;
 }
@@ -79,7 +79,6 @@ void TFTStuff_setup(TFTCalibrationData& calibrationData, bool appDataValid) {
   for (uint8_t b = 0; b < NUM_BUTTONS; b++) {
     uint8_t col = b % NUM_COLS;
     uint8_t row = b / NUM_COLS;
-    configureButton(b, String(b), String("print('") + String(b) + String("')"));
     button[b].ui.initButton(&tft, BUTTON_X + col * (BUTTON_W + BUTTON_SPACING_X), BUTTON_Y + row * (BUTTON_H + BUTTON_SPACING_Y), BUTTON_W, BUTTON_H, TFT_WHITE, TFT_BLUE, TFT_WHITE, "", BUTTON_TEXTSIZE);
 
     drawButton(b);
