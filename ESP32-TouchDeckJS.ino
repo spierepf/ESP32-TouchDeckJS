@@ -1,3 +1,5 @@
+#include "SPIFFS.h"
+#include "mjsStuff.h"
 #include "EEPROMWrapper.h"
 #include "TFTStuff.h"
 
@@ -13,6 +15,12 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
 
+  if (!SPIFFS.begin()) {
+    Serial.println("Formatting file system");
+    SPIFFS.format();
+    SPIFFS.begin();
+  }
+
   Serial.println("Loading EEPROM");
   appData.begin();
   bool appDataValid = appData.validateCRC();
@@ -22,6 +30,7 @@ void setup() {
     Serial.println("EEPROM data invalid");
   }
 
+  mjsStuff_setup();
   TFTStuff_setup(appData.payload.tftCalibrationData, appDataValid);
 
   if(!appData.validateCRC()) {
