@@ -68,6 +68,7 @@ void drawButton(uint8_t b) {
 void configureButton(const int b, const char* text, const char* command) {
   button[b].text = text;
   button[b].command = command;
+  drawButton(b);
 }
 
 void TFTStuff_setup(TFTCalibrationData& calibrationData, bool appDataValid) {

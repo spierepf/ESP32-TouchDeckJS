@@ -5,9 +5,14 @@
 struct mjs *mjs;
 
 void configureButton(const int b, const char* text, const char* command);
+void openCommandPrompt();
+void typeString(char *x);
 
 void *my_dlsym(void *handle, const char *name) {
   if (strcmp(name, "configureButton") == 0) return (void*)configureButton;
+  if (strcmp(name, "openCommandPrompt") == 0) return (void*)openCommandPrompt;
+  if (strcmp(name, "typeString") == 0) return (void*)typeString;
+
   Serial.print("Unknown function: ");
   Serial.println(name);
   return NULL;
@@ -21,6 +26,8 @@ void mjsStuff_setup() {
   mjs = mjs_create();
   mjs_set_ffi_resolver(mjs, my_dlsym);
   mjs_exec(mjs, "let configure_button = ffi('void configureButton(int, char*, char*)');", NULL);
+  mjs_exec(mjs, "let open_command_prompt = ffi('void openCommandPrompt(void)');", NULL);
+  mjs_exec(mjs, "let type_string = ffi('void typeString(char*)');", NULL);
 
   if (SPIFFS.exists(BOOT_FILE)) {
     File f = SPIFFS.open(BOOT_FILE, "r");
