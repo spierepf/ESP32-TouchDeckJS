@@ -2,6 +2,7 @@
 #include "mjsStuff.h"
 #include "EEPROMWrapper.h"
 #include "TFTStuff.h"
+#include "BleKeyboardStuff.h"
 
 struct AppData {
   TFTCalibrationData tftCalibrationData;
@@ -30,8 +31,9 @@ void setup() {
     Serial.println("EEPROM data invalid");
   }
 
-  mjsStuff_setup();
   TFTStuff_setup(appData.payload.tftCalibrationData, appDataValid);
+  BleKeyboardStuff_setup();
+  mjsStuff_setup();
 
   if(!appData.validateCRC()) {
     Serial.println("Updating EEPROM");
