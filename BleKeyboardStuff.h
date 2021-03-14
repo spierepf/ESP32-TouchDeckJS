@@ -1,14 +1,19 @@
 #include <BleKeyboard.h>
 
+#define STATUS_LED LED_BUILTIN
+
 class LocalBleKeyboard : public BleKeyboard {
 public:
   size_t write(uint8_t c)
   {
-    uint8_t p = press(c);
-    delay(5);
-    release(c);
-    delay(20);
-    return p;
+    if(isConnected()) {
+      uint8_t p = press(c);
+      delay(5);
+      release(c);
+      delay(20);
+      return p;
+    }
+    return 0;
   }  
 };
 
@@ -31,4 +36,9 @@ void typeString(char *x) {
 
 void BleKeyboardStuff_setup() {
   bleKeyboard.begin();
+  pinMode(STATUS_LED, OUTPUT);
+}
+
+void BleKeyboardStuff_loop() {
+  digitalWrite(STATUS_LED, bleKeyboard.isConnected());
 }
